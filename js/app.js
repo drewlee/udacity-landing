@@ -28,20 +28,31 @@ const activeClassName = 'active';
  * Start Helper Functions
  */
 
+/** @type { (el: string) => HTMLElement } */
+function makeEl(el) {
+  return document.createElement(el);
+}
+
+/** @type { (link: HTMLAnchorElement, section: HTMLElement) => void } */
+function setupLink(link, section) {
+  link.classList.add('menu__link');
+  link.href = `#${section.id}`;
+  link.innerText = section.dataset.nav;
+}
+
 /**
  * End Helper Functions
  * Begin Main Functions
  */
 
 // Build the nav
+/** @type { () => DocumentFragment } */
 function buildNavbar() {
   return Array.from(sectionEls).reduce((frag, sectionEl) => {
-    const li = document.createElement('li');
-    const link = document.createElement('a');
-  
-    link.classList.add('menu__link');
-    link.href = `#${sectionEl.id}`;
-    link.innerText = sectionEl.dataset.nav;
+    const li = makeEl('li');
+    const link = makeEl('a');
+
+    setupLink(link, sectionEl);
   
     li.appendChild(link);
     frag.appendChild(li);
@@ -50,10 +61,17 @@ function buildNavbar() {
   }, document.createDocumentFragment());
 }
 
+/** @type { () => void } */
+function renderNav() {
+  const navbarFragment = buildNavbar();
+  navbarListEl.appendChild(navbarFragment);
+}
+
 // Add class 'active' to section when near top of viewport
-function setActiveSection(activeSectionEl) {
+/** @type { (activeSection: HTMLElement) => void } */
+function setActiveSection(activeSection) {
   sectionEls.forEach((section) => section.classList.remove(activeClassName));
-  activeSectionEl.classList.add(activeClassName);
+  activeSection.classList.add(activeClassName);
 }
 
 /**
@@ -62,8 +80,7 @@ function setActiveSection(activeSectionEl) {
  */
 
 // Build menu 
-const navbarFragment = buildNavbar();
-navbarListEl.appendChild(navbarFragment);
+renderNav();
 
 // Scroll to section on link click
 navbarListEl.addEventListener('click', (evt) => {
@@ -72,14 +89,12 @@ navbarListEl.addEventListener('click', (evt) => {
   if (el.tagName.toLowerCase() === 'a') {
     const id = el.getAttribute('href');
     const section = document.querySelector(id);
-    const rect = section.getBoundingClientRect();
-    const top = document.body.scrollTop + rect.top;
 
     // Set sections as active
     setActiveSection(section);
 
     // Scroll to anchor ID using scrollTo event
-    window.scrollTo({ top, behavior: 'smooth'});
+    section.scrollIntoView({ behavior: 'smooth' });
 
     evt.preventDefault();
   }
