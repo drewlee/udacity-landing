@@ -2,12 +2,21 @@
 
 ## Table of Contents
 
-* [Instructions](#instructions)
+* [Purpose](#purpose)
+* [Goals](#goals)
+* [Concepts Covered](#concepts-covered)
 
-## Instructions
+## Purpose
+Gain an understanding of working with the DOM through a hands on coding exercise.
 
-The starter project has some HTML and CSS styling to display a static version of the Landing Page project. You'll need to convert this project from a static project to an interactive one. This will require modifying the HTML and CSS files, but primarily the JavaScript file.
+## Goals
+* Programmatically build navigation links.
+* Scroll section into view on activating its corresponding nav link.
+* Highlight the active section.
 
-To get started, open `js/app.js` and start building out the app's functionality
-
-For specific, detailed instructions, look at the project instructions in the Udacity Classroom.
+## Concepts Covered
+* DOM manipulation
+* Node selection
+* Programmatic HTML element creation
+* Dynamic CSS styling
+* Programmatic HTML attribute modification

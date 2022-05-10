@@ -19,6 +19,7 @@
 /**
  * Define Global Variables
  */
+
 const navbarListEl = document.getElementById('navbar__list');
 const sectionEls = document.querySelectorAll('[data-nav]');
 const activeClassName = 'active';
@@ -28,9 +29,9 @@ const activeClassName = 'active';
  * Start Helper Functions
  */
 
-/** @type { (el: string) => HTMLElement } */
-function makeEl(el) {
-  return document.createElement(el);
+/** @type { (name: string) => HTMLElement } */
+function makeEl(name) {
+  return document.createElement(name);
 }
 
 /** @type { (link: HTMLAnchorElement, section: HTMLElement) => void } */
@@ -74,17 +75,9 @@ function setActiveSection(activeSection) {
   activeSection.classList.add(activeClassName);
 }
 
-/**
- * End Main Functions
- * Begin Events
- */
-
-// Build menu 
-renderNav();
-
-// Scroll to section on link click
-navbarListEl.addEventListener('click', (evt) => {
-  const el = evt.target;
+/** @type { (evt: MouseEvent) => void } */
+function navLinkHandler(evt) {
+  const { target: el } = evt;
 
   if (el.tagName.toLowerCase() === 'a') {
     const id = el.getAttribute('href');
@@ -98,4 +91,15 @@ navbarListEl.addEventListener('click', (evt) => {
 
     evt.preventDefault();
   }
-});
+}
+
+/**
+ * End Main Functions
+ * Begin Events
+ */
+
+// Build menu 
+renderNav();
+
+// Scroll to section on link click
+navbarListEl.addEventListener('click', navLinkHandler);
