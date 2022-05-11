@@ -80,7 +80,8 @@ section {
 }
 
 .navbar__menu .menu__link:hover,
-.navbar__menu .menu__link:focus {
+.navbar__menu .menu__link:focus,
+.navbar__menu .menu__link.active {
   background: #333;
   color: #fff;
   transition: ease 0.3s all;

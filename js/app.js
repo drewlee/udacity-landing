@@ -1,3 +1,4 @@
+'use strict';
 /**
  * Manipulating the DOM exercise.
  * Exercise programmatically builds navigation,
@@ -20,9 +21,17 @@
  * Define Global Variables
  */
 
-const navbarListEl = document.getElementById('navbar__list');
-const sectionEls = document.querySelectorAll('[data-nav]');
 const activeClassName = 'active';
+const navLinkClassName = 'menu__link';
+
+/** @type { NodeListOf<HTMLElement> } */
+let linkEls;
+
+/** @type { HTMLUListElement } */
+let navbarListEl;
+
+/** @type { NodeListOf<HTMLElement> } */
+let sectionEls;
 
 /**
  * End Global Variables
@@ -34,11 +43,21 @@ function makeEl(name) {
   return document.createElement(name);
 }
 
-/** @type { (link: HTMLAnchorElement, section: HTMLElement) => void } */
-function setupLink(link, section) {
-  link.classList.add('menu__link');
-  link.href = `#${section.id}`;
-  link.innerText = section.dataset.nav;
+/** @type { (link: HTMLAnchorElement, isActive: boolean, section: HTMLElement) => void } */
+function setupLink(link, isActive, section) {
+  const className = [link.className, navLinkClassName, isActive ? activeClassName : ''].filter((name) => name !== '').join(' ');
+  const attrs = {
+    href: `#${section.id}`,
+    innerText: section.dataset.nav,
+    className,
+  };
+
+  Object.entries(attrs).forEach(([property, value]) => link[property] = value);
+}
+
+/** @type { (...elTuples: [HTMLElement, HTMLElement][]) => void } */
+function appendChildAll(...elTuples) {
+  elTuples.forEach(([parent, child]) => parent.appendChild(child));
 }
 
 /**
@@ -49,15 +68,15 @@ function setupLink(link, section) {
 // Build the nav
 /** @type { () => DocumentFragment } */
 function buildNavbar() {
-  return Array.from(sectionEls).reduce((frag, sectionEl) => {
-    const li = makeEl('li');
+  return Array.from(sectionEls).reduce((frag, sectionEl, index) => {
+    // First link is active by default
+    const isActive = index === 0;
     const link = makeEl('a');
+    const li = makeEl('li');
 
-    setupLink(link, sectionEl);
-  
-    li.appendChild(link);
-    frag.appendChild(li);
-  
+    setupLink(link, isActive, sectionEl);
+    appendChildAll([li, link], [frag, li]);
+
     return frag;
   }, document.createDocumentFragment());
 }
@@ -68,11 +87,11 @@ function renderNav() {
   navbarListEl.appendChild(navbarFragment);
 }
 
-// Add class 'active' to section when near top of viewport
-/** @type { (activeSection: HTMLElement) => void } */
-function setActiveSection(activeSection) {
-  sectionEls.forEach((section) => section.classList.remove(activeClassName));
-  activeSection.classList.add(activeClassName);
+// Add class 'active' to section when near top of viewport and nav link
+/** @type { (elsToDeactivate: NodeListOf<HTMLElement>, elToActivate: HTMLElement) => void } */
+function setActiveElement(elsToDeactivate, elToActivate) {
+  elsToDeactivate.forEach((el) => el.classList.remove(activeClassName));
+  elToActivate.classList.add(activeClassName);
 }
 
 /** @type { (evt: MouseEvent) => void } */
@@ -80,11 +99,14 @@ function navLinkHandler(evt) {
   const { target: el } = evt;
 
   if (el.tagName.toLowerCase() === 'a') {
-    const id = el.getAttribute('href');
-    const section = document.querySelector(id);
+    const idSelector = el.getAttribute('href');
+    const section = document.querySelector(idSelector);
 
     // Set sections as active
-    setActiveSection(section);
+    setActiveElement(sectionEls, section);
+
+    // Set navigation links as active
+    setActiveElement(linkEls, el);
 
     // Scroll to anchor ID using scrollTo event
     section.scrollIntoView({ behavior: 'smooth' });
@@ -98,8 +120,16 @@ function navLinkHandler(evt) {
  * Begin Events
  */
 
-// Build menu 
-renderNav();
+// Enable functionality regardless of script placement
+document.addEventListener('DOMContentLoaded', () => {
+  navbarListEl = document.getElementById('navbar__list');
+  sectionEls = document.querySelectorAll('[data-nav]');
 
-// Scroll to section on link click
-navbarListEl.addEventListener('click', navLinkHandler);
+  // Build menu
+  renderNav();
+
+  linkEls = document.querySelectorAll(`.${navLinkClassName}`);
+
+  // Scroll to section on link click
+  navbarListEl.addEventListener('click', navLinkHandler);
+});
