@@ -24,7 +24,7 @@
 const activeClassName = 'active';
 const navLinkClassName = 'menu__link';
 
-/** @type { NodeListOf<HTMLElement> } */
+/** @type { NodeListOf<HTMLAnchorElement> } */
 let linkEls;
 
 /** @type { HTMLUListElement } */
@@ -108,7 +108,7 @@ function navLinkHandler(evt) {
     // Set navigation links as active
     setActiveElement(linkEls, el);
 
-    // Scroll to anchor ID using scrollTo event
+    // Scroll to section using scrollIntoView function
     section.scrollIntoView({ behavior: 'smooth' });
 
     evt.preventDefault();
